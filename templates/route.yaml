@@ -1,0 +1,23 @@
+{{- if .Values.serviceAccount.create -}}
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: {{ tpl (include "appmodel.fullname" $) $ }}
+  labels:
+    {{- tpl (include "appmodel.labels" $) $ | nindent 4 }}
+spec:
+{{- if .Values.route.host }}
+  host: {{ tpl (.Values.route.host) $ }}
+  {{- end }}
+  to:
+    kind: Service
+    name: {{ tpl (include "appmodel.fullname" $) $ }}
+    weight: 100
+  port:
+    targetPort: {{ tpl (.Values.service.targetPort) $ }}
+  {{- if .Values.route.tls.enabled }}
+  tls:
+    termination: {{ tpl (.Values.route.tls.termination) $ }}
+    insecureEdgeTerminationPolicy: {{ tpl (.Values.route.tls.insecureEdgeTerminationPolicy) $ }}
+  {{- end }}
+{{- end }}

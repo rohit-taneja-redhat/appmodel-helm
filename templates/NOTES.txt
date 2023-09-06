@@ -1,0 +1,11 @@
+The {{ tpl (include "appmodel.fullname" $) $ }} Application has been Deployed!
+
+{{- if .Values.route.enabled }}
+You can view the application at  the following address:
+
+{{- if .Values.route.host }}
+http{{ if $.Values.route.tls.enabled }}s{{ end }}://{{ tpl (.Values.route.host) $ }}
+{{- else }}
+http{{ if $.Values.route.tls.enabled }}s{{ end }}://{{ tpl (appmodel.fullname $) $ }}-{{ .Release.Namespace }}.<OpenShift_BaseDomain>
+{{- end }}
+{{- end }}

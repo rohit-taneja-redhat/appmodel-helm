@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ tpl (include "appmodel.fullname" $) $ }}
+  labels:
+    {{- tpl (include "appmodel.labels" $) $ | nindent 4 }}
+spec:
+  type: {{ tpl (.Values.service.type) $ }}
+  ports:
+    - port: {{ tpl (.Values.service.port | toString) $ }}
+      targetPort: {{ tpl (.Values.service.targetPort) $ }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- tpl (include "appmodel.selectorLabels" $) $ | nindent 4 }}

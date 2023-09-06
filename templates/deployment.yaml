@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ tpl (include "appmodel.fullname" $) $ }}
+  labels:
+    {{- tpl (include "appmodel.labels" $) $ | nindent 4 }}
+spec:
+  replicas: {{ tpl (.Values.replicaCount | toString) $ }}
+  selector:
+    matchLabels:
+      {{- tpl (include "appmodel.selectorLabels" $) $ | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- tpl (toYaml $) $ | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- tpl (include "appmodel.selectorLabels" $) $ | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- tpl (toYaml .) $ | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ tpl (include "appmodel.serviceAccountName" $) $ }}
+      securityContext:
+        {{- tpl (toYaml .Values.podSecurityContext) $ | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- tpl (toYaml .Values.securityContext) $ | nindent 12 }}
+          image: "{{ tpl (include "appmodel.image" .Values.image) $ }}"
+          imagePullPolicy: {{ tpl (.Values.image.pullPolicy) $ }}
+          ports:
+            - name: {{ tpl (.Values.service.targetPort) $ }}
+              containerPort: {{ tpl (.Values.service.port | toString) $ }}
+              protocol: TCP
+          {{- with .Values.livenessProbe }}
+          livenessProbe:
+            {{- tpl (toYaml .) $ | nindent 12 }}
+          {{- end }}
+          {{- with .Values.readinessProbe }}
+          readinessProbe:
+            {{- tpl (toYaml .) $ | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- tpl (toYaml .Values.resources) $ | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- tpl (toYaml $) $ | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- tpl (toYaml $) $ | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- tpl (toYaml $) $ | nindent 8 }}
+      {{- end }}
