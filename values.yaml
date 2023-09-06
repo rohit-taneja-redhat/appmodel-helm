@@ -20,10 +20,10 @@ route:
     certificate: ""
 
 image:
-  registry: 
-  repository: 
-  version: 
-  pullPolicy:
+  registry: quay.io
+  repository: rtaneja/app-migration-image-build
+  version: "sha256:1a13a9422701c5147ca25204fea86ff23464ed0dc8568399f2f8e6ea922a1b3a"
+  pullPolicy: IfNotPresent
 
 imagePullSecrets: []
 nameOverride: ""
